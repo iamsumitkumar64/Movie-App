@@ -1,30 +1,32 @@
-const popularApi = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
-const searchApi = 'https://api.themoviedb.org/3/search/movie';
+// // const popularApi = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
+// const searchApi = 'https://api.themoviedb.org/3/search/movie';
+const popularApi = 'https://online-movie-database.p.rapidapi.com/title/v2/get-popular?first=20&country=US&language=en-US';
 
 const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0OGI2MDEyZDFjZjBkM2U3MDBjNGE4YjEyNTljZjZjYSIsIm5iZiI6MTczNzY0NjM3Ny45NjYsInN1YiI6IjY3OTI2MTI5ZWZhODUzMzdjM2ZhODEyYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.qKuIEke6JTQan1P1ExJ75j3fg8GgI0C9Fa4OA70Ge0Y'
+    'x-rapidapi-key': '9509987347msh5920d332a81283ep115dd0jsn70b716b8b1fa',
+    'x-rapidapi-host': 'online-movie-database.p.rapidapi.com'
   }
 };
 
+let apiUrl;
 async function movie(searchName) {
   try {
-    let apiUrl;
     if (searchName === '') {
       apiUrl = popularApi;
     } else {
-      apiUrl = `${searchApi}?query=${encodeURIComponent(searchName)}&include_adult=true&language=en-US&page=1`;
+      apiUrl = `https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=20&country=US&language=en-US`;
+      // apiUrl=`https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=20`;
     }
-
     const response = await fetch(apiUrl, options);
     const data = await response.json();
-    console.log(data);
+    console.log('API Response:', data);
     show(data);
   } catch (error) {
     document.getElementById("box").innerHTML = "An error occurred while fetching data.";
-    console.error(error);
+    console.error('Fetch error:', error);
   }
 }
 
@@ -34,14 +36,63 @@ function getinput() {
 }
 
 let show = (data) => {
-  console.log(data);
-  document.getElementById("box").innerHTML = "";
+  console.log('function received:', data);
+  const box = document.getElementById("box");
+  if (!box) {
+    console.error('Box element not found');
+    return;
+  }
+  box.innerHTML = "";
+
+  if (apiUrl == popularApi) {
+    const movie = data.data?.movies?.edges;
+    const tv = data.data?.tv?.edges;
+    if (!movie.length && !tv.length) {
+      box.innerHTML = "No results found";
+      return;
+    }
+    if (movie.length) {
+      let titleMovies = document.createElement("p");
+      titleMovies.textContent = "Popular Movies";
+      titleMovies.className = 'title';
+      box.appendChild(titleMovies);
+      create(movie);
+    }
+
+    if (tv.length) {
+      let titleTV = document.createElement("p");
+      titleTV.textContent = "Popular TV Series";
+      titleTV.className = 'title';
+      box.appendChild(titleTV);
+      create(tv);
+    }
+  }
+  else {
+    const search = data.data?.mainSearch?.edges;
+    // if (search.length) {
+      let titlesearch = document.createElement("p");
+      titlesearch.textContent = "As You Browsed";
+      titlesearch.className = 'title';
+      box.appendChild(titlesearch);
+      create(search);
+    // }
+  }
+}
+
+function create(results) {
   let div = document.createElement("div");
   div.setAttribute("style", "display:flex;flex-wrap:wrap; justify-content:space-around;");
-
-  data.results.forEach(element => {
+  results.forEach(edge => {
+    let element;
+    if (apiUrl == popularApi) {
+      element = edge.node;
+    }
+    else {
+      element =edge.node.entity;
+    }
     let search_img = document.createElement("img");
-    search_img.src = `https://image.tmdb.org/t/p/w500${element.poster_path}`;
+    search_img.src = element.primaryImage?.url || 'https://via.placeholder.com/300x450';
+    search_img.loading = "lazy";
     search_img.setAttribute("style", "border: 2px solid #4A90E2; width: 21vmax; height: auto; border-radius: 1vmax;");
 
     let search_div = document.createElement("div");
@@ -51,23 +102,23 @@ let show = (data) => {
     search_div.appendChild(search_img);
 
     let title = document.createElement("p");
-    title.textContent = element.original_title;
+    title.textContent = element.titleText?.text || 'No Title';
     title.setAttribute("style", "font-weight: bold; font-size: 1.8vmax; color: #FFD700;");
 
     let year = document.createElement("p");
-    year.textContent = `Year: ${element.release_date}`;
+    year.textContent = `Year: ${element.releaseYear?.year || 'N/A'}`;
     year.setAttribute("style", "font-size: 1.4vmax; font-weight: bold; color: #EAEAEA;");
 
     let rate = document.createElement("p");
-    rate.textContent = `Rating: ${element.vote_average}`;
+    rate.textContent = `Rating: ${element.ratingsSummary?.aggregateRating || 'N/A'}`;
     rate.setAttribute("style", "font-size: 1.4vmax; font-weight: bold; color: #EAEAEA;");
 
     let adult = document.createElement("p");
-    adult.textContent = `Adult: ${element.adult}`;
+    adult.textContent = `Type: ${element.contentType?.displayableProperty?.value?.plainText || 'N/A'}`;
     adult.setAttribute("style", "font-size: 1.4vmax; font-weight: bold; color: #EAEAEA;");
 
     let overview = document.createElement("p");
-    overview.textContent = element.overview;
+    overview.textContent = element.plot?.plotText?.plainText || 'No description available';
     overview.id = "overview";
     overview.setAttribute("style", "font-size: 1.5vmax; font-weight: bold; position: absolute; bottom: 0; left: 0; overflow: scroll; color:rgb(255, 255, 255);");
 
@@ -79,8 +130,10 @@ let show = (data) => {
 
     div.appendChild(search_div);
   });
-  document.getElementById("box").appendChild(div);
+  box.appendChild(div);
 }
 
-getinput();
-document.getElementById('sear_opt').addEventListener("input", getinput);
+document.addEventListener('DOMContentLoaded', () => {
+  getinput();
+  document.getElementById('sear_opt').addEventListener("input", getinput);
+});

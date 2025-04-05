@@ -47,8 +47,8 @@ main {
 button {
     font-weight: 900;
     border-radius: 0.3vmax;
-    background-color: #4CAF50;
-    color: white;
+    color: #a6ffa9;
+    background-color: rgb(94, 93, 93);
     border: none;
     padding: 0.5vmax 1vmax;
     border-radius: 1vmax;
@@ -56,12 +56,13 @@ button {
 }
 
 button:hover {
-    color: #a6ffa9;
-    background-color: rgb(94, 93, 93);
+    background-color: #4CAF50;
+    color: white;
 }
 
 footer {
-    position: sticky;
+    width: 100%;
+    position: fixed;
     color: #EAEAEA;
     background-color: #3A3A3A;
     bottom: 0;
@@ -95,4 +96,13 @@ footer>div:hover {
     z-index: 1000;
     border-radius: .7vmax;
     transform: scale(1.1);
+}
+
+.title {
+    width: 100%;
+    color: #a6ffa9;
+    background-color: rgb(94, 93, 93);
+    font-weight: 900;
+    font-size: 4vmax;
+    text-align: center;
 }
