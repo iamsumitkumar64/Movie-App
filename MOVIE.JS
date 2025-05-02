@@ -1,6 +1,6 @@
 // // const popularApi = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
 // const searchApi = 'https://api.themoviedb.org/3/search/movie';
-const popularApi = 'https://online-movie-database.p.rapidapi.com/title/v2/get-popular?first=20&country=US&language=en-US';
+const popularApi = 'https://online-movie-database.p.rapidapi.com/title/v2/get-popular?first=40&country=US&language=en-US';
 
 const options = {
   method: 'GET',
@@ -17,8 +17,8 @@ async function movie(searchName) {
     if (searchName === '') {
       apiUrl = popularApi;
     } else {
-      apiUrl = `https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=20&country=US&language=en-US`;
-      // apiUrl=`https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=20`;
+      apiUrl = `https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=40&country=US&language=en-US`;
+      // apiUrl=`https://online-movie-database.p.rapidapi.com/v2/search?searchTerm=${searchName}&first=40`;
     }
     const response = await fetch(apiUrl, options);
     const data = await response.json();
