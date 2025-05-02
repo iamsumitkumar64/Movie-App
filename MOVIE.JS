@@ -135,5 +135,5 @@ function create(results) {
 
 document.addEventListener('DOMContentLoaded', () => {
   getinput();
-  document.getElementById('sear_opt').addEventListener("input", getinput);
+  //document.getElementById('sear_opt').addEventListener("input", getinput);
 });
